@@ -13,7 +13,7 @@ def productmodel2dict(proxy_ip):
 		'Speed':proxy_ip.Speed,
 		'ConnectSpeed':proxy_ip.ConnectSpeed,
 		'LastVerifiedTime':proxy_ip.LastVerifiedTime,
-		'IsVeried':proxy_ip.IsVeried
+		'IsVerified':proxy_ip.IsVerified
 	}
 
 class ProxyIPsModel:
@@ -89,8 +89,8 @@ class ProxyIPsModel:
 		self.LastVerifiedTime=value
 			
 	@property
-	def IsVeried(self):
-		return self.IsVeried
-	@IsVeried.setter
+	def IsVerified(self):
+		return self.IsVerified
+	@IsVerified.setter
 	def IsVeried(self,value):
-		self.IsVeried=value
+		self.IsVerified=value

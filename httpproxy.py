@@ -7,6 +7,7 @@ import threading
 import sys
 import codecs
 import uuid
+import json
 from datetime import datetime, date, time
 
 import db_ProxyIPs
@@ -20,7 +21,7 @@ lock = threading.Lock()
 def getProxyList(targeturl="http://www.xicidaili.com/nn/"):
     countNum = 0
     requestHeader = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"}
-
+    print u'获取IP代理,来自'+targeturl+','+str(datetime.now())
     for page in range(1,2):
         url = targeturl + str(page)
         #print url
@@ -47,49 +48,44 @@ def getProxyList(targeturl="http://www.xicidaili.com/nn/"):
             time    =   tds[8].text.strip()
             
             model=model_ProxyIPs.ProxyIPsModel()
-            model.ID=uuid.uuid1()
+            model.ID=str(uuid.uuid1())
             model.IP=ip
-            model.Country=nation
+            model.Country=nation.upper()
             model.Port=int(port)
-            model.ServerAddresss=locate
-            model.Anonymity=anony
+            model.ServerAddresss=''
+            model.Anonymity='anonymous' if anony==u'高匿' else ''
             model.Protocol=protocol
-            model.Speed=speed
+            model.Speed=float(speed.replace(u"秒",""))
             model.ConnectSpeed=0
-            #model.LastVerifiedTime=
-            model.IsVeried=0
+            model.LastVerifiedTime=str(datetime.now())
+            model.IsVerified=0
             db_ProxyIPs.add(model)
             #print '%s=%s:%s' % (protocol, ip, port)
             countNum += 1
+    print u'获取IP代理成功,来自'+targeturl+','+str(datetime.now())
     return countNum
 
 def verifyProxyList():
-    pass
     #验证代理的有效性
-    # requestHeader = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"}
-    # myurl = 'http://www.baidu.com/'
-    # while True:
-        # lock.acquire()
-        # ll = inFile.readline().strip()
-        # lock.release()
-        # if len(ll) == 0: break
-        # line = ll.strip().split('|')
-        # protocol= line[5]
-        # ip      = line[1]
-        # port    = line[2]
-        
-        # try:
-            # conn = httplib.HTTPConnection(ip, port, timeout=5.0)
-            # conn.request(method = 'GET', url = myurl, headers = requestHeader )
-            # res = conn.getresponse()
-            # lock.acquire()
-            # print "+++Success:" + ip + ":" + port
-            # outFile.write(ll + "\n")
-            # #outFile.write((ll + "\n").encode("utf-8"))
-            # lock.release()
-        # except BaseException as e:
-            # #print e
-            # print "---Failure:" + ip + ":" + port
+    requestHeader = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"}
+    myurl = 'http://www.baidu.com/'
+    models=db_ProxyIPs.get_not_verified_proxis()
+    for model in models:
+        protocol= model.Protocol
+        ip      = model.IP
+        port    = model.Port
+        ID= model.ID
+        try:
+            conn = httplib.HTTPConnection(ip, port, timeout=5.0)
+            conn.request(method = 'GET', url = myurl, headers = requestHeader )
+            res = conn.getresponse()
+            db_ProxyIPs.update_last_verified_time(ID,str(datetime.now()))
+            print "+++Success:" + ip + ":" + str(port)
+            
+        except BaseException as e:
+            #print e
+            print "---Failure:" + ip + ":" + str(port)
+            db_ProxyIPs.move(ID)
 def get_verified_proxies_num():
 	pass
 	# outFile = open('verified.txt')
@@ -119,8 +115,8 @@ def get_verified_proxy(index):
 def get_proxies_from_web():
     print u"开始获取代理,"
     print datetime.now()
-    proxynum = getProxyList("http://www.xicidaili.com/nn/")
-    print u"国内高匿：" + str(proxynum)
+    # proxynum = getProxyList("http://www.xicidaili.com/nn/")
+    # print u"国内高匿：" + str(proxynum)
     # proxynum = getProxyList("http://www.xicidaili.com/nt/")
     # print u"国内透明：" + str(proxynum)
     # proxynum = getProxyList("http://www.xicidaili.com/wn/")
@@ -133,14 +129,14 @@ def get_proxies_from_web():
     print u"\n验证代理的有效性："
     print datetime.now()
     verifyProxyList()
-    all_thread = []
-    for i in range(50):
-        t = threading.Thread(target=verifyProxyList)
-        all_thread.append(t)
-        t.start()
+    # all_thread = []
+    # for i in range(50):
+        # t = threading.Thread(target=verifyProxyList)
+        # all_thread.append(t)
+        # t.start()
         
-    for t in all_thread:
-        t.join()
+    # for t in all_thread:
+        # t.join()
     
     print u"代理获取完毕."
     print datetime.now()
