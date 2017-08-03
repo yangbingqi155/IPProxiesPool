@@ -32,12 +32,22 @@ def move(ID):
 	paras=(ID)
 	return True if db.excute_no_query(sql,paras)>0 else False
 	
+def remove_by_ip(ip,port):
+	sql="delete from `IPProxies`.`ProxyIPs` where ip=%s and port=%s"
+	print port
+	paras=(ip,port)
+	return True if db.excute_no_query(sql,paras)>0 else False
+
 def update_last_verified_time(ID,last_verified_time):
 	sql="update `IPProxies`.`ProxyIPs` set LastVerifiedTime=%s,IsVerified=1 where ID=%s"
 	paras=(last_verified_time,ID)
 	return True if db.excute_no_query(sql,paras)>0 else False
-
-def get_newest_proxy_ips(top_num):
+def update_last_verified_time_by_ip(last_verified_time,ip,port):
+	sql="update `IPProxies`.`ProxyIPs` set LastVerifiedTime=%s,IsVerified=1 where ip=%s and port=%s"
+	paras=(last_verified_time,ip,port)
+	return True if db.excute_no_query(sql,paras)>0 else False
+	
+def get_newest_verified_proxy_ips(top_num):
 	sql="select *from `IPProxies`.`ProxyIPs` where IsVerified=1 order by LastVerifiedTime desc  limit 0,%d"
 	paras=(top_num)
 	data=db.select(sql,paras)
@@ -52,12 +62,6 @@ def get(ip,port,protocol):
 	paras=(ip,port,protocol)
 	data=db.select(sql,paras)
 	return data
-
-def remove_by_ip(ip,port,protocol):
-	sql="delete from `IPProxies`.`ProxyIPs` where ip=%s and port=%s and protocol=%s"
-	print port
-	paras=(ip,port,protocol)
-	return True if db.excute_no_query(sql,paras)>0 else False
 
 def get_not_verified_proxis(top_num=0):
 	sql=''

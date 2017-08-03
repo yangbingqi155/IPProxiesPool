@@ -49,7 +49,3 @@ def select(sql,paras=()):
 	conn.close()
 	return result
 	
-if __name__ == '__main__':
-	sql='delete from ProxyIPs'
-	effect_row=excute_no_query(sql)
-	print 'effect_row:'+str(effect_row)
