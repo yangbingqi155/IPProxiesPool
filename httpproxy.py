@@ -19,7 +19,7 @@ import model_ProxyIPs
 def getProxyList(targeturl="http://www.xicidaili.com/nn/"):
 	countNum = 0
 	requestHeader = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"}
-	print u'获取IP代理,来自'+targeturl+','+str(datetime.now())
+	print 'get ip proxies from website of :'+targeturl+',starting:'+str(datetime.now())
 	for page in range(1,2):
 		url = targeturl + str(page)
 		#print url
@@ -60,13 +60,10 @@ def getProxyList(targeturl="http://www.xicidaili.com/nn/"):
 			db_ProxyIPs.add(model)
 			#print '%s=%s:%s' % (protocol, ip, port)
 			countNum += 1
-	print u'获取IP代理成功,来自'+targeturl+','+str(datetime.now())
+	print 'get ip proxies from website of :'+targeturl+',starting:'+str(datetime.now())
 	return countNum
 
 def verifyProxyList():
-	#验证代理的有效性
-	requestHeader = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"}
-	myurl = 'http://www.baidu.com/'
 	models=db_ProxyIPs.get_not_verified_proxis()
 	all_thread=[]
 	for model in models:
@@ -74,6 +71,8 @@ def verifyProxyList():
 		ip      = model.IP
 		port    = model.Port
 		ID= model.ID
+		#验证代理的有效性
+		#verifyProxyIP(ip,port,ID)
 		thread=threading.Thread(target=verifyProxyIP,args=(ip,port,ID))
 		all_thread.append(thread)
 		thread.start()
@@ -82,6 +81,8 @@ def verifyProxyList():
 
 def verifyProxyIP(ip,port,ID=''):
 	try:
+		requestHeader = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"}
+		myurl = 'http://www.baidu.com/'
 		conn = httplib.HTTPConnection(ip, port, timeout=5.0)
 		conn.request(method = 'GET', url = myurl, headers = requestHeader )
 		res = conn.getresponse()
@@ -92,7 +93,6 @@ def verifyProxyIP(ip,port,ID=''):
 		print "+++Success:" + ip + ":" + str(port)
 
 	except BaseException as e:
-		#print e
 		print "---Failure:" + ip + ":" + str(port)
 		if ID=='' or ID==None:
 			db_ProxyIPs.move(ID)
@@ -117,10 +117,9 @@ def get_verified_proxy():
 		return newest_verified_proxy_ips[0];
 
 def get_proxies_from_web():
-	print u'开始获取代理,'
-	print str(datetime.now())
+	print "get proxy ip starting:"+str(datetime.now())
 	proxynum = getProxyList("http://www.xicidaili.com/nn/")
-	print u"国内高匿：" + str(proxynum)
+	print "CN-Anonymity：" + str(proxynum)
 	# proxynum = getProxyList("http://www.xicidaili.com/nt/")
 	# print u"国内透明：" + str(proxynum)
 	# proxynum = getProxyList("http://www.xicidaili.com/wn/")
@@ -128,13 +127,11 @@ def get_proxies_from_web():
 	# proxynum = getProxyList("http://www.xicidaili.com/wt/")
 	# print u"国外透明：" + str(proxynum)
 
-	print u"结束获取代理,"
-	print str(datetime.now())
-	print u"\n验证代理的有效性："
-	print str(datetime.now())
+	print "get proxy ip finish,"+str(datetime.now())
+	print "\n verify ip proxy start:"+str(datetime.now())
 	verifyProxyList()
 
-	print u"代理获取完毕."
+	print "\n verify ip proxy finish:"+str(datetime.now())
 	print str(datetime.now())
 
 if __name__ == '__main__':
