@@ -3,11 +3,11 @@
 
 import pymysql
 
-import config
+import db_config
 
 def excute_no_query(sql,paras=()):
 	#创建连接
-	conn = pymysql.connect(host=config.ip_proxies_database_con_host, port=config.ip_proxies_database_con_port, user=config.ip_proxies_database_con_user, passwd=config.ip_proxies_database_con_passwd, db=config.ip_proxies_database_con_db)
+	conn = pymysql.connect(host=db_config.ip_proxies_database_con_host, port=db_config.ip_proxies_database_con_port, user=db_config.ip_proxies_database_con_user, passwd=db_config.ip_proxies_database_con_passwd, db=db_config.ip_proxies_database_con_db)
 	#创建游标
 	cursor = conn.cursor()
 	
@@ -28,7 +28,7 @@ def excute_no_query(sql,paras=()):
 	return effect_row
 def select(sql,paras=()):
 	#创建连接
-	conn = pymysql.connect(host=config.ip_proxies_database_con_host, port=config.ip_proxies_database_con_port, user=config.ip_proxies_database_con_user, passwd=config.ip_proxies_database_con_passwd, db=config.ip_proxies_database_con_db)
+	conn = pymysql.connect(host=db_config.ip_proxies_database_con_host, port=db_config.ip_proxies_database_con_port, user=db_config.ip_proxies_database_con_user, passwd=db_config.ip_proxies_database_con_passwd, db=db_config.ip_proxies_database_con_db)
 	#创建游标
 	cursor = conn.cursor()
 	

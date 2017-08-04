@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-def productmodel2dict(proxy_ip):
+def proxyidmodel2dict(proxy_ip):
 	return {
 		'ID':proxy_ip.ID,
 		'IP':proxy_ip.IP,

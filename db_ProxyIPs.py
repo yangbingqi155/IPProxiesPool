@@ -47,22 +47,49 @@ def update_last_verified_time_by_ip(last_verified_time,ip,port):
 	paras=(last_verified_time,ip,port)
 	return True if db.excute_no_query(sql,paras)>0 else False
 	
-def get_newest_verified_proxy_ips(top_num):
-	sql="select *from `IPProxies`.`ProxyIPs` where IsVerified=1 order by LastVerifiedTime desc  limit 0,%d"
-	paras=(top_num)
-	data=db.select(sql,paras)
+def get_newest_verified_proxy_ips(top_num=0):
+	paras=(int(top_num),)
 	models=[]
+	data=[]
+	sql=''
+	if top_num==0:
+		sql="select *from `IPProxies`.`ProxyIPs` where IsVerified=1 order by LastVerifiedTime desc"
+		data=db.select(sql)
+	else:
+		sql="select *from `IPProxies`.`ProxyIPs` where IsVerified=1 order by LastVerifiedTime desc  limit 0,%s"
+		data=db.select(sql,paras)
 	for item in data:
 		model=data_2_model(item)
 		models.append(model)
 	return models
-
+	
+def get_verified_proxies_num():
+	sql="select *from `IPProxies`.`ProxyIPs` where IsVerified=1"
+	effect_rows=db.excute_no_query(sql)
+	return effect_rows
+	
 def get(ip,port,protocol):
 	sql="select *from `IPProxies`.`ProxyIPs` where ip=%s and port=%s and protocol=%s"
 	paras=(ip,port,protocol)
 	data=db.select(sql,paras)
 	return data
-
+	
+def get_need_verified_proxis(top_num=0):
+	sql=''
+	data=[]
+	paras=(top_num)
+	models=[]
+	if top_num==0:
+		sql="select *from `IPProxies`.`ProxyIPs` order by IsVerified desc,LastVerifiedTime desc"
+		data=db.select(sql)
+	else:
+		sql="select *from `IPProxies`.`ProxyIPs`  order by IsVerified desc,LastVerifiedTime desc limit 0,%d"
+		data=db.select(sql,paras)
+	for item in data:
+		model=data_2_model(item)
+		models.append(model)
+	return models
+	
 def get_not_verified_proxis(top_num=0):
 	sql=''
 	data=[]
