@@ -61,7 +61,7 @@ def getProxyListFromUSProxy(targeturl="https://www.us-proxy.org/"):
 		ConnectSpeed=0
 		LastVerifiedTime=str(datetime.now())
 		IsVerified=0
-		if anony!='anonymous' and nation!='US':
+		if anony!='anonymous' or nation!='US':
 			continue
 		ipproxy=[ip,nation,port,locate,anony,protocol,speed,ConnectSpeed,LastVerifiedTime,IsVerified]
 		ipproxies.append(ipproxy)
@@ -167,24 +167,23 @@ def get_proxies_from_web():
 	proxynum = getProxyListFromUSProxy("https://www.us-proxy.org/")
 	print "US-Anonymity：" + str(proxynum)
 	
-	# proxynum = getProxyListFromUSProxy("https://free-proxy-list.net/")
-	# print "US-Anonymity：" + str(proxynum)
+	proxynum = getProxyListFromUSProxy("https://free-proxy-list.net/")
+	print "US-Anonymity：" + str(proxynum)
 	
 	print "get proxy ip finish,"+str(datetime.now())
 	print "\n verify ip proxy start:"+str(datetime.now())
 	verifyProxyList()
 
 	print "\n verify ip proxy finish:"+str(datetime.now())
-	print str(datetime.now())
 	
 def sleeptime(hour,min,sec):
 	return hour*3600 + min*60 + sec
 
 if __name__ == '__main__':
-	get_proxies_from_web()
-	# second = sleeptime(0,5,0)
-	# while 1==1:
-		# get_proxies_from_web()
-		# time.sleep(second)
-		# print 'do action'
+	# get_proxies_from_web()
+	second = sleeptime(0,5,0)
+	while 1==1:
+		get_proxies_from_web()
+		time.sleep(second)
+		print 'do action'
 
