@@ -33,7 +33,48 @@ def proxyList2Models(proxyList):
 		model.IsVerified=proxy[9]
 		models.append(model)
 	return models;
-def getProxyListFromHidemy(targeturl="https://hidemy.name/en/proxy-list/?start="):
+def getProxyListFromHidemy(targeturl="https://hidemy.name/en/proxy-list/?country=US&type=hs&anon=4#list"):
+	countNum = 0
+	requestHeader = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"}
+	url = targeturl
+	print 'get ip proxies from website of :'+url+',starting:'+str(datetime.now())
+	#print url
+	request = urllib2.Request(url, headers=requestHeader)
+	html_doc = urllib2.urlopen(request).read()
+
+	soup = BeautifulSoup(html_doc, "html.parser")
+	#print soup
+	trs = soup.find('table',attrs={'class','proxy__t'}).find("tbody").find_all('tr')
+	ipproxies=[]
+	
+	for tr in trs:
+		tds = tr.find_all('td')
+		ip      =   tds[0].text.strip()
+		port    =   tds[1].text.strip()
+		nation  =   tds[2].find("div").text.replace('&nbsp;','').strip()
+		anony   =   tds[5].text.strip()
+		protocol=   tds[4].text.strip()
+		speed=   float(tds[3].find("div").find("p").text.replace("ms","").strip())
+
+		anony='anonymous' if anony=='High' else anony
+		nation='US' if nation.find('United States')>=0 else nation
+		protocol=protocol.split(',')[0].strip() if protocol.find(",")>=0 else protocol
+		locate=''
+		ConnectSpeed=0
+		LastVerifiedTime=str(datetime.now())
+		IsVerified=0
+		# print 'ip:'+ip+',anonymous:'+anony+",nation:"+nation+",protocol:"+protocol
+		if anony!='anonymous' or nation!='US' or (protocol!='HTTPS' and protocol!='HTTP' ):
+			continue
+		ipproxy=[ip,nation,port,locate,anony,protocol,speed,ConnectSpeed,LastVerifiedTime,IsVerified]
+		ipproxies.append(ipproxy)
+		countNum += 1
+	models=proxyList2Models(ipproxies)
+	for model in models:
+		db_ProxyIPs.add(model)
+	return countNum
+	
+def getProxyListFromHidemyByPage(targeturl="https://hidemy.name/en/proxy-list/?start="):
 	countNum = 0
 	requestHeader = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"}
 	for page in range(0,15):
@@ -211,9 +252,8 @@ def get_proxies_from_web():
 	proxynum = getProxyListFromUSProxy("https://free-proxy-list.net/")
 	print "US-Anonymity:" + str(proxynum)
 	
-	# proxynum = getProxyListFromHidemy("https://hidemy.name/en/proxy-list/?start=")
-	# print "US-Anonymity:" + str(proxynum)
-	
+	proxynum = getProxyListFromHidemy("https://hidemy.name/en/proxy-list/?country=US&type=hs&anon=4#list")
+	print "US-Anonymity:" + str(proxynum)
 	
 	print "get proxy ip finish,"+str(datetime.now())
 	print "\n verify ip proxy start:"+str(datetime.now())
@@ -225,7 +265,7 @@ def sleeptime(hour,min,sec):
 	return hour*3600 + min*60 + sec
 
 if __name__ == '__main__':
-	# get_proxies_from_web()
+	#get_proxies_from_web()
 	second = sleeptime(0,0,10)
 	while 1==1:
 		get_proxies_from_web()
