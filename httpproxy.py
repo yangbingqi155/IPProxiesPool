@@ -12,9 +12,12 @@ import time
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+import logging
 
 import db_ProxyIPs
 import model_ProxyIPs
+import db_IPProxiesPoolApplicationSwitch
+import model_IPProxiesPoolApplicationSwitch
 
 def proxyList2Models(proxyList):
 	models=[]
@@ -80,7 +83,7 @@ def getProxyListFromHidemyByPage(targeturl="https://hidemy.name/en/proxy-list/?s
 	requestHeader = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"}
 	for page in range(0,15):
 		url = targeturl+str(page*64)
-		logging.info(get ip proxies from website of :'+url+',starting:'+str(datetime.now()))
+		logging.info('get ip proxies from website of :'+url+',starting:'+str(datetime.now()))
 		print 'get ip proxies from website of :'+url+',starting:'+str(datetime.now())
 		#print url
 		request = urllib2.Request(url, headers=requestHeader)
@@ -276,7 +279,7 @@ def get_proxies_from_web():
 def sleeptime(hour,min,sec):
 	return hour*3600 + min*60 + sec
 	
-def set_logging()：
+def set_logging():
 	logging.basicConfig(level=logging.DEBUG,
                 format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                 datefmt='%a, %d %b %Y %H:%M:%S',
@@ -286,7 +289,10 @@ if __name__ == '__main__':
 	set_logging()
 	#get_proxies_from_web()
 	second = sleeptime(0,0,10)
+	db_IPProxiesPoolApplicationSwitch.update(True)
 	while 1==1:
 		get_proxies_from_web()
+		if db_IPProxiesPoolApplicationSwitch.get().Excute==0:
+			break
 		time.sleep(second)
-
+		
