@@ -264,8 +264,8 @@ def get_proxies_from_web():
 	proxynum = getProxyListFromUSProxy("https://free-proxy-list.net/")
 	print "US-Anonymity:" + str(proxynum)
 	
-	proxynum = getProxyListFromHidemy("https://hidemy.name/en/proxy-list/?country=US&type=hs&anon=4#list")
-	print "US-Anonymity:" + str(proxynum)
+	# proxynum = getProxyListFromHidemy("https://hidemy.name/en/proxy-list/?country=US&type=hs&anon=4&start=0#list")
+	# print "US-Anonymity:" + str(proxynum)
 	
 	logging.info("get proxy ip finish,"+str(datetime.now()))
 	print "get proxy ip finish,"+str(datetime.now())
