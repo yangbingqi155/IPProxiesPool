@@ -149,7 +149,7 @@ def getProxyListFromUSProxy(targeturl="https://www.us-proxy.org/"):
 		ConnectSpeed=0
 		LastVerifiedTime=str(datetime.now())
 		IsVerified=0
-		if anony!='anonymous' or nation!='US':
+		if anony =='transparent': #or nation!='US':
 			continue
 		ipproxy=[ip,nation,port,locate,anony,protocol,speed,ConnectSpeed,LastVerifiedTime,IsVerified]
 		ipproxies.append(ipproxy)
@@ -228,12 +228,12 @@ def verifyProxyList():
 def verifyProxyIP(ip,port,country,ID=''):
 	try:
 		requestHeader = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36"}
-		myurl = 'http://www.baidu.com/'
+		myurl = 'http://www.amazon.in/'
 		if country.upper()=="US":
 			myurl = 'http://www.amazon.in/'
 		elif country.upper()=="CN":
 			myurl = 'http://www.baidu.com/'
-		
+			
 		conn = httplib.HTTPConnection(ip, port, timeout=5.0)
 		conn.request(method = 'GET', url = myurl, headers = requestHeader )
 		res = conn.getresponse()
